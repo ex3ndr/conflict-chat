@@ -28,7 +28,7 @@
   align-items: stretch;
   max-width: 1200px;
   background-color: hsl(var(--background));
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 1px 2px 0px;
+  overflow: hidden;
 }
 
 @media (min-height: 900px) or (min-width: 1200px) {
