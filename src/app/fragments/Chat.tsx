@@ -3,7 +3,7 @@ import { useChat } from '../api/useChat';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AlertCircle, Loader2 } from "lucide-react"
 import { Button } from '@/components/ui/button';
-import { randomKey } from '../utils/randomKey';
+import { joinSession } from '../api/joinSession';
 
 export const Chat = React.memo(() => {
 
@@ -25,6 +25,8 @@ export const Chat = React.memo(() => {
             description={session.description}
             joinedA={session.joinedA}
             joinedB={session.joinedB}
+            joined={session.joined}
+            reload={chat.refetch}
         />);
     }
     if (session.state === 'starting') {
@@ -34,23 +36,23 @@ export const Chat = React.memo(() => {
     return null;
 });
 
-const ChatJoin = React.memo((props: { id: string, nameA: string, nameB: string, description: string, joinedA: boolean, joinedB: boolean }) => {
+const ChatJoin = React.memo((props: { id: string, nameA: string, nameB: string, description: string, joinedA: boolean, joinedB: boolean, joined: 'none' | 'a' | 'b', reload: () => Promise<any> }) => {
 
     // Load join key
-    const joinKey = React.useMemo(() => {
-        let ex = localStorage.getItem('joinkey_' + props.id);
-        if (ex) {
-            return ex;
-        } else {
-            let key = randomKey();
-            localStorage.setItem('joinkey_' + props.id, key);
-            return key;
-        }
-    }, [props.id]);
-    const [joined, setJoined] = React.useState<'a' | 'b' | 'spectrator' | null>(localStorage.getItem('joined_' + props.id) as 'a' | 'b' | 'spectrator' | null);
     const [loading, setLoading] = React.useState(false);
-    const join = (arg: 'a' | 'b' | 'spectrator') => {
-
+    const join = async (arg: 'a' | 'b') => {
+        if (loading) return;
+        setLoading(true);
+        try {
+            const response = await joinSession({ id: props.id, side: arg });
+            if (response.ok) {
+                await props.reload();
+            } else {
+                alert(response.message);
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -60,14 +62,19 @@ const ChatJoin = React.memo((props: { id: string, nameA: string, nameB: string, 
                 <blockquote className="border-l-2 pl-6 italic mb-[48px]">
                     {props.description}
                 </blockquote>
-                {joined === null && (
+                {props.joined === 'none' && (
                     <>
-                        <div className='flex flex-row gap-[8px] mb-[16px]'>
-                            <Button disabled={loading} onClick={() => join('a')}>Join as {props.nameA}</Button>
-                            <Button disabled={loading} onClick={() => join('b')}>Join as {props.nameB}</Button>
+                        <div className='flex flex-row gap-[8px] h-[48px] items-center justify-center'>
+                            <Button disabled={loading || props.joinedA} onClick={() => join('a')}>Join as {props.nameA}</Button>
+                            <Button disabled={loading || props.joinedB} onClick={() => join('b')}>Join as {props.nameB}</Button>
                         </div>
-                        {/* <Button variant="ghost" disabled={loading} onClick={() => join('spectrator')}>Join as spectrator</Button> */}
                     </>
+                )}
+                {props.joined !== 'none' && (
+                    <div className='flex flex-row gap-[8px] h-[48px] items-center justify-center'>
+                        <Loader2 className="h-[16px] w-[16px] animate-spin" />
+                        <p>Awaiting {props.joined === 'a' ? props.nameB : props.nameA} to join session...</p>
+                    </div>
                 )}
             </div>
         </div>
@@ -76,7 +83,7 @@ const ChatJoin = React.memo((props: { id: string, nameA: string, nameB: string, 
 
 const ChatAwaitStart = React.memo(() => {
     return (
-        <div className='flex flex-grow justify-center items-center'>
+        <div className='flex flex-grow justify-center items-center flex-col'>
             <Loader2 className="mr-2 h-[64px] w-[64px] animate-spin mb-[16px]" />
             <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mb-[16px]">
                 Awaiting AI agent to join...
