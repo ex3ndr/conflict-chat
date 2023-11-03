@@ -4,11 +4,15 @@ import { ThemeProvider } from "@/components/theme-provider";
 import './main.css'
 import { RouterProvider } from 'react-router-dom';
 import { _router } from './app/_router.tsx';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
+const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <RouterProvider router={_router} />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <RouterProvider router={_router} />
+      </ThemeProvider>
+    </QueryClientProvider>
   </React.StrictMode>,
 )
