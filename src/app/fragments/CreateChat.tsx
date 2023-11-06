@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { createSession } from '../api/createSession';
 import { Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { backoff } from '../utils/time';
+import { randomKey } from '../utils/randomKey';
 
 export const CreateChat = React.memo(() => {
 
@@ -18,7 +20,8 @@ export const CreateChat = React.memo(() => {
         if (loading) return;
         setLoading(true);
         try {
-            const response = await createSession({ nameA, nameB, description });
+            const repeatKey = randomKey();
+            const response = await backoff(() => createSession({ nameA, nameB, description, repeatKey }));
             if (response.ok) {
                 navigate(`/chat/${response.id}`);
             } else {

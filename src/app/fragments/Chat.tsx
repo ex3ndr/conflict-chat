@@ -4,6 +4,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { AlertCircle, Loader2 } from "lucide-react"
 import { Button } from '@/components/ui/button';
 import { joinSession } from '../api/joinSession';
+import { Header } from '@/components/header';
+import { useMessages } from '../api/useMessages';
+import { MessageView } from './components/MessageView';
+import { backoff } from '../utils/time';
+import { Textarea } from '@/components/ui/textarea';
+import { randomKey } from '../utils/randomKey';
+import { sendMessage } from '../api/sendMessage';
 
 export const Chat = React.memo(() => {
 
@@ -33,7 +40,101 @@ export const Chat = React.memo(() => {
         return (<ChatAwaitStart />);
     }
 
-    return null;
+    return <ChatView
+        id={id}
+        nameMe={session.joined === 'a' ? session.nameA : session.nameB}
+        nameOpponent={session.joined === 'a' ? session.nameB : session.nameA}
+        description={session.description}
+    />;
+});
+
+const ChatMessages = React.memo((props: { id: string, me: string, opponent: string }) => {
+    const messages = useMessages(props.id);
+
+    if (!messages.data) {
+        return (
+            <div className='flex flex-grow justify-center items-center'>
+                <Loader2 className="mr-2 h-[64px] w-[64px] animate-spin" />
+            </div>
+        );
+    }
+    return (
+        <div className='flex flex-1 flex-col-reverse overflow-y-scroll'>
+            {[...messages.data.messages.messages].reverse().map((v) => (
+                <MessageView key={'msg-' + v.mid} message={v} me={props.me} opponent={props.opponent} />
+            ))}
+        </div>
+    );
+});
+
+const ChatSend = React.memo((props: { id: string }) => {
+    const [text, setText] = React.useState('');
+    const [sending, setSending] = React.useState(false);
+    const ref = React.useRef<HTMLTextAreaElement>(null);
+    const doSend = () => {
+        if (sending) return;
+        let trimmed = text.trim();
+        if (trimmed.length === 0) return;
+        (async () => {
+            setSending(true);
+            try {
+
+                // Send message
+                const repeatKey = randomKey();
+                await backoff(() => sendMessage({ id: props.id, repeatKey, text: trimmed }));
+
+                // Clear text
+                setText('');
+                setSending(false);
+            } finally {
+                setSending(false);
+            }
+        })();
+    };
+    const onKeypress = (e: React.KeyboardEvent) => {
+        if (e.key == 'Enter' && !e.shiftKey) {
+            doSend();
+        }
+    };
+    React.useLayoutEffect(() => {
+        if (ref.current && !sending) {
+            ref.current.focus();
+        }
+    }, [sending]);
+
+    return (
+        <div className='flex flex-row gap-[8px] min-h-[64px] mx-[32px] max-h-[192px] flex-grow-1 items-center py-[8px] mb-[32px]'>
+            <div className='flex flex-column flex-grow'>
+                <Textarea
+                    className='min-h-[40px] h-auto overflow-hidden'
+                    ref={ref}
+                    placeholder='Type your message'
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    onKeyDown={onKeypress}
+                    disabled={sending}
+                    onSubmit={doSend}
+                    rows={1}
+                />
+            </div>
+            <Button
+                disabled={sending}
+                onClick={doSend}
+            >
+                Send
+            </Button>
+        </div>
+    );
+});
+
+const ChatView = React.memo((props: { id: string, nameMe: string, nameOpponent: string, description: string }) => {
+    return (
+        <>
+            <Header title={'Mediation of ' + props.nameMe + ' and ' + props.nameOpponent} />
+            <ChatMessages id={props.id} me={props.nameMe} opponent={props.nameOpponent} />
+            <ChatSend id={props.id} />
+        </>
+    );
 });
 
 const ChatJoin = React.memo((props: { id: string, nameA: string, nameB: string, description: string, joinedA: boolean, joinedB: boolean, joined: 'none' | 'a' | 'b', reload: () => Promise<any> }) => {
