@@ -53,7 +53,7 @@ export const MessageView = React.memo((props: { message: MessageType, me: string
         if (index % 3 === 1) {
             const side = body[index].toLowerCase();
             const name = body[index + 1];
-            if (side === 'a') {
+            if ((side === 'a' && props.meIsA) || (side === 'b' && !props.meIsA)) {
                 bodyElements.push(<span className='font-bold text-blue-500'>{name}</span>);
             } else {
                 bodyElements.push(<span className='font-bold'>{name}</span>);

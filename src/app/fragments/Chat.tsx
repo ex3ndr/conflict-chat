@@ -13,6 +13,7 @@ import { randomKey } from '../utils/randomKey';
 import { sendMessage } from '../api/sendMessage';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export const Chat = React.memo(() => {
 
@@ -73,6 +74,7 @@ const ChatMessages = React.memo((props: { id: string, me: string, opponent: stri
 const ChatSend = React.memo((props: { id: string }) => {
     const [text, setText] = React.useState('');
     const [sending, setSending] = React.useState(false);
+    const [sendPrivate, setSendPrivate] = React.useState(false);
     const ref = React.useRef<HTMLTextAreaElement>(null);
     const doSend = () => {
         if (sending) return;
@@ -84,7 +86,7 @@ const ChatSend = React.memo((props: { id: string }) => {
 
                 // Send message
                 const repeatKey = randomKey();
-                await backoff(() => sendMessage({ id: props.id, repeatKey, text: trimmed }));
+                await backoff(() => sendMessage({ id: props.id, repeatKey, private: sendPrivate, text: trimmed }));
 
                 // Clear text
                 setText('');
@@ -107,7 +109,7 @@ const ChatSend = React.memo((props: { id: string }) => {
 
     return (
         <div className='flex flex-row gap-[8px] min-h-[64px] mx-[32px] max-h-[192px] flex-grow-1 items-center py-[8px] mb-[32px]'>
-            <div className='flex flex-column flex-grow'>
+            <div className='flex flex-col flex-grow'>
                 <Textarea
                     className='min-h-[40px] h-auto overflow-hidden'
                     ref={ref}
@@ -119,8 +121,17 @@ const ChatSend = React.memo((props: { id: string }) => {
                     onSubmit={doSend}
                     rows={1}
                 />
+                <div className="flex items-center space-x-2 h-[36px] ml-[4px]">
+                    <Checkbox checked={sendPrivate} onCheckedChange={(e) => setSendPrivate(e === true)} />
+                    <label
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        Private message
+                    </label>
+                </div>
             </div>
             <Button
+                className='mb-[36px]'
                 disabled={sending}
                 onClick={doSend}
             >
