@@ -11,6 +11,8 @@ import { backoff } from '../utils/time';
 import { Textarea } from '@/components/ui/textarea';
 import { randomKey } from '../utils/randomKey';
 import { sendMessage } from '../api/sendMessage';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
 
 export const Chat = React.memo(() => {
 
@@ -128,9 +130,15 @@ const ChatSend = React.memo((props: { id: string }) => {
 });
 
 const ChatView = React.memo((props: { id: string, nameMe: string, nameOpponent: string, description: string }) => {
+    const navigate = useNavigate();
+    const resetButton = (
+        <Button onClick={() => navigate('/')}>
+            Start again
+        </Button>
+    );
     return (
         <>
-            <Header title={'Mediation of ' + props.nameMe + ' and ' + props.nameOpponent} />
+            <Header title={'Mediation of ' + props.nameMe + ' and ' + props.nameOpponent} right={resetButton} />
             <ChatMessages id={props.id} me={props.nameMe} opponent={props.nameOpponent} />
             <ChatSend id={props.id} />
         </>
@@ -138,6 +146,8 @@ const ChatView = React.memo((props: { id: string, nameMe: string, nameOpponent: 
 });
 
 const ChatJoin = React.memo((props: { id: string, nameA: string, nameB: string, description: string, joinedA: boolean, joinedB: boolean, joined: 'none' | 'a' | 'b', reload: () => Promise<any> }) => {
+
+    const toaster = useToast();
 
     // Load join key
     const [loading, setLoading] = React.useState(false);
@@ -155,12 +165,17 @@ const ChatJoin = React.memo((props: { id: string, nameA: string, nameB: string, 
             setLoading(false);
         }
     };
+    const inviteLink = window.location.protocol + '//' + window.location.host + '/chat/' + props.id;
+    const doCopy = () => {
+        navigator.clipboard.writeText(inviteLink);
+        toaster.toast({ description: 'Copied to clipboard' });
+    };
 
     return (
         <div className='flex flex-grow justify-center items-center'>
             <div className='flex flex-col items-center'>
-                <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 mb-[16px]">Mediation Session</h2>
-                <blockquote className="border-l-2 pl-6 italic mb-[48px]">
+                <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 mb-[24px]">Mediation Session</h2>
+                <blockquote className="border-l-2 pl-6 italic mb-[32px]">
                     {props.description}
                 </blockquote>
                 {props.joined === 'none' && (
@@ -177,6 +192,11 @@ const ChatJoin = React.memo((props: { id: string, nameA: string, nameB: string, 
                         <p>Awaiting {props.joined === 'a' ? props.nameB : props.nameA} to join session...</p>
                     </div>
                 )}
+                <h4 className='scroll-m-20 text-xl font-semibold tracking-tight mt-[48px] mb-[16px]'>Inivitation link</h4>
+                <div className='flex flex-row self-stretch gap-[16px]'>
+                    <Input value={inviteLink} onFocus={(e) => e.target.select()} />
+                    <Button onClick={doCopy}>Copy</Button>
+                </div>
             </div>
         </div>
     )
