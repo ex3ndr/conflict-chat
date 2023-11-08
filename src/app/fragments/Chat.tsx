@@ -46,11 +46,12 @@ export const Chat = React.memo(() => {
         id={id}
         nameMe={session.joined === 'a' ? session.nameA : session.nameB}
         nameOpponent={session.joined === 'a' ? session.nameB : session.nameA}
+        meIsA={session.joined === 'a'}
         description={session.description}
     />;
 });
 
-const ChatMessages = React.memo((props: { id: string, me: string, opponent: string }) => {
+const ChatMessages = React.memo((props: { id: string, me: string, opponent: string, meIsA: boolean }) => {
     const messages = useMessages(props.id);
 
     if (!messages.data) {
@@ -63,7 +64,7 @@ const ChatMessages = React.memo((props: { id: string, me: string, opponent: stri
     return (
         <div className='flex flex-1 flex-col-reverse overflow-y-scroll'>
             {[...messages.data.messages.messages].reverse().map((v) => (
-                <MessageView key={'msg-' + v.mid} message={v} me={props.me} opponent={props.opponent} />
+                <MessageView key={'msg-' + v.mid} message={v} me={props.me} opponent={props.opponent} meIsA={props.meIsA} />
             ))}
         </div>
     );
@@ -129,7 +130,7 @@ const ChatSend = React.memo((props: { id: string }) => {
     );
 });
 
-const ChatView = React.memo((props: { id: string, nameMe: string, nameOpponent: string, description: string }) => {
+const ChatView = React.memo((props: { id: string, nameMe: string, nameOpponent: string, description: string, meIsA: boolean }) => {
     const navigate = useNavigate();
     const resetButton = (
         <Button onClick={() => navigate('/')}>
@@ -139,7 +140,7 @@ const ChatView = React.memo((props: { id: string, nameMe: string, nameOpponent: 
     return (
         <>
             <Header title={'Mediation of ' + props.nameMe + ' and ' + props.nameOpponent} right={resetButton} />
-            <ChatMessages id={props.id} me={props.nameMe} opponent={props.nameOpponent} />
+            <ChatMessages id={props.id} me={props.nameMe} opponent={props.nameOpponent} meIsA={props.meIsA} />
             <ChatSend id={props.id} />
         </>
     );

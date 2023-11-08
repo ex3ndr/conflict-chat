@@ -9,6 +9,7 @@ export type MessageType = {
     content: {
         sender: 'system' | 'incoming' | 'outgoing'
         date: number,
+        private?: boolean,
         body: {
             kind: 'text',
             value: string

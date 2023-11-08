@@ -1,17 +1,18 @@
+import * as React from 'react';
 import { MessageType } from '@/app/api/useMessages';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import * as React from 'react';
+import { VenetianMaskIcon } from 'lucide-react';
 
-export const MessageView = React.memo((props: { message: MessageType, me: string, opponent: string }) => {
+const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+
+export const MessageView = React.memo((props: { message: MessageType, me: string, opponent: string, meIsA: boolean }) => {
 
     let name = 'Assistant';
     if (props.message.content.sender === 'incoming') {
         name = props.opponent;
     } else if (props.message.content.sender === 'outgoing') {
         name = props.me + ' (You)';
-    } else {
-        console.warn('Unknown sender', props.message.content.sender);
     }
     let color = 'color-neutral-900';
     if (props.message.content.sender === 'system') {
@@ -46,14 +47,38 @@ export const MessageView = React.memo((props: { message: MessageType, me: string
         )
     }
 
+    let body = props.message.content.body.value.split(linkRegex);
+    let bodyElements: any[] = [];
+    body.forEach((part, index) => {
+        if (index % 3 === 1) {
+            const side = body[index].toLowerCase();
+            const name = body[index + 1];
+            if (side === 'a') {
+                bodyElements.push(<span className='font-bold text-blue-500'>{name}</span>);
+            } else {
+                bodyElements.push(<span className='font-bold'>{name}</span>);
+            }
+        } else if (index % 3 === 0) {
+            bodyElements.push(<span>{part}</span>);
+        }
+    });
+
     return (
         <div className='flex flex-row px-[32px] py-[16px]'>
             <div className='flex-shrink-0 mr-[16px] mt-[8px]'>
                 {avatar}
             </div>
             <div className='flex flex-col'>
-                <span className={cn('text-base text-neutral-900 font-semibold', color)}>{name}</span>
-                <span>{props.message.content.body.value}</span>
+                <div className='flex flex-row self-stretch items-center'>
+                    {props.message.content.private === true && (
+                        <VenetianMaskIcon className={cn(color, 'mr-[4px] mt-[1px]')} size={18} />
+                    )}
+                    <span className={cn('text-base text-neutral-900 font-semibold', color)}>{name}</span>
+                    {props.message.content.private === true && (
+                        <span className='ml-[4px] font-bold'>visible only to you</span>
+                    )}
+                </div>
+                <span>{bodyElements}</span>
             </div>
         </div>
     )
