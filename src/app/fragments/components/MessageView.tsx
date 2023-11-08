@@ -8,7 +8,7 @@ const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
 
 export const MessageView = React.memo((props: { message: MessageType, me: string, opponent: string, meIsA: boolean }) => {
 
-    let name = 'Assistant';
+    let name = 'Mediator';
     if (props.message.content.sender === 'incoming') {
         name = props.opponent;
     } else if (props.message.content.sender === 'outgoing') {
@@ -41,7 +41,7 @@ export const MessageView = React.memo((props: { message: MessageType, me: string
         avatar = (
             <Avatar>
                 <AvatarFallback>
-                    AS
+                    ME
                 </AvatarFallback>
             </Avatar>
         )
