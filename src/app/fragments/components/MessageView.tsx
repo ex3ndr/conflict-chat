@@ -65,21 +65,23 @@ export const MessageView = React.memo((props: { message: MessageType, me: string
     });
 
     return (
-        <div className='flex flex-row px-[32px] py-[16px]'>
-            <div className='flex-shrink-0 mr-[16px] mt-[8px]'>
-                {avatar}
-            </div>
-            <div className='flex flex-col'>
-                <div className='flex flex-row self-stretch items-center'>
-                    {props.message.content.private === true && (
-                        <VenetianMaskIcon className={cn(color, 'mr-[4px] mt-[1px]')} size={18} />
-                    )}
-                    <span className={cn('text-base font-semibold', color)}>{name}</span>
-                    {props.message.content.private === true && (
-                        <span className='ml-[4px] font-bold'>visible only to you</span>
-                    )}
+        <div className='flex flex-row mx-[32px] py-[8px] justify-center'>
+            <div className='flex flex-row flex-grow max-w-[720px]'>
+                <div className='flex-shrink-0 mr-[16px] mt-[8px]'>
+                    {avatar}
                 </div>
-                <span>{bodyElements}</span>
+                <div className='flex flex-col'>
+                    <div className='flex flex-row self-stretch items-center'>
+                        {props.message.content.private === true && (
+                            <VenetianMaskIcon className={cn(color, 'mr-[4px] mt-[1px]')} size={18} />
+                        )}
+                        <span className={cn('text-base font-semibold', color)}>{name}</span>
+                        {props.message.content.private === true && (
+                            <span className='ml-[4px] font-bold'>visible only to you</span>
+                        )}
+                    </div>
+                    <span>{bodyElements}</span>
+                </div>
             </div>
         </div>
     )

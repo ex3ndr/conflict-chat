@@ -1,21 +1,27 @@
 .header {
     display: flex;
     flex-direction: row;
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-left: 16px;
+    padding-right: 16px;
     align-self: stretch;
-    height: 56px;
+    height: 64px;
     align-items: center;
-    border-bottom: hsl(var(--border));
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
+    max-width: 720px;
+    flex-grow: 1;
+    flex-basis: 0;
 }
 
 .title {
-    display: inline;
+    display: flex;
     font-size: 24px;
     font-weight: 600;
+    padding-right: 16px;
+    align-items: baseline;
+    gap: 8px;
     flex-grow: 1;
     flex-basis: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     @apply text-foreground;
 }
