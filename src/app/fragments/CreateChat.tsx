@@ -31,6 +31,11 @@ export const CreateChat = React.memo(() => {
             setLoading(false);
         }
     };
+    const doExample = () => {
+        setNameA('Cat');
+        setNameB('Dog');
+        setDescription('Cat wants to play inside, but Dog wants to play outside');
+    }
 
     return (
         <div className={styles.container}>
@@ -53,6 +58,9 @@ export const CreateChat = React.memo(() => {
             <Button disabled={loading} onClick={doCreate}>
                 {loading && (<Loader2 className="mr-2 h-4 w-4 animate-spin" />)}
                 Start session
+            </Button>
+            <Button disabled={loading} onClick={doExample} className='mt-[16px]' variant={'ghost'}>
+                Example
             </Button>
         </div>
     );
