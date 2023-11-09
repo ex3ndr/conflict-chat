@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useChat } from '../api/useChat';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AlertCircle, Loader2 } from "lucide-react"
+import { AlertCircle, BookDown, Loader2 } from "lucide-react"
 import { Button } from '@/components/ui/button';
 import { joinSession } from '../api/joinSession';
 import { Header } from '@/components/header';
@@ -50,6 +50,7 @@ export const Chat = React.memo(() => {
         nameOpponent={session.joined === 'a' ? session.nameB : session.nameA}
         meIsA={session.joined === 'a'}
         description={session.description}
+        expires={session.expiresAt}
     />;
 });
 
@@ -145,20 +146,39 @@ const ChatSend = React.memo((props: { id: string, typing: boolean }) => {
     );
 });
 
-const ChatView = React.memo((props: { id: string, nameMe: string, nameOpponent: string, description: string, meIsA: boolean }) => {
+const TimerComponent = React.memo((props: { until: number }) => {
+    let [now, setNow] = React.useState(Math.floor(Date.now() / 1000));
+    React.useEffect(() => {
+        setInterval(() => setNow(Math.floor(Date.now() / 1000)), 100);
+    }, []);
+    let remaining = Math.max(props.until - now, 0);
+    let remainingMinutes = Math.floor(remaining / 60) % 60;
+    let remainingSeconds = remaining % 60;
+    let remainingHours = Math.floor(remaining / 3600);
+    let remainingSecondsStr = remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds;
+    let remainingMinutesStr = remainingMinutes < 10 ? '0' + remainingMinutes : remainingMinutes;
+    let remainingHoursStr = remainingHours < 10 ? '0' + remainingHours : remainingHours;
+
+    return <span className='text-xl opacity-50'> {remainingHoursStr}:{remainingMinutesStr}:{remainingSecondsStr}</span>
+});
+
+const ChatView = React.memo((props: { id: string, nameMe: string, nameOpponent: string, description: string, meIsA: boolean, expires: number }) => {
 
     // Events
     const [messages, typing] = useMessaging(props.id);
-
     const navigate = useNavigate();
     const resetButton = (
         <Button onClick={() => navigate('/')}>
             Start again
         </Button>
     );
+    const title = <>
+        {'Mediation of ' + props.nameMe + ' and ' + props.nameOpponent}
+        <TimerComponent until={props.expires} />
+    </>;
     return (
         <>
-            <Header title={'Mediation of ' + props.nameMe + ' and ' + props.nameOpponent} right={resetButton} />
+            <Header title={title} right={resetButton} />
             <ChatMessages id={props.id} me={props.nameMe} opponent={props.nameOpponent} meIsA={props.meIsA} messages={messages} />
             <ChatSend id={props.id} typing={typing} />
         </>

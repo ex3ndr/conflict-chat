@@ -8,6 +8,7 @@ export type SessionState = {
 } | {
     state: 'awaiting',
     createdAt: number,
+    expiresAt: number,
     nameA: string,
     nameB: string,
     joinedA: boolean,
@@ -17,6 +18,7 @@ export type SessionState = {
 } | {
     state: 'starting',
     createdAt: number,
+    expiresAt: number,
     nameA: string,
     nameB: string,
     description: string,
@@ -24,6 +26,7 @@ export type SessionState = {
 } | {
     state: 'started',
     createdAt: number,
+    expiresAt: number,
     nameA: string,
     nameB: string,
     description: string,
