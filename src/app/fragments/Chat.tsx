@@ -5,7 +5,7 @@ import { AlertCircle, Loader2 } from "lucide-react"
 import { Button } from '@/components/ui/button';
 import { joinSession } from '../api/joinSession';
 import { Header } from '@/components/header';
-import { useMessages } from '../api/useMessages';
+import { MessageType } from '../api/useMessages';
 import { MessageView } from './components/MessageView';
 import { backoff } from '../utils/time';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,6 +14,7 @@ import { sendMessage } from '../api/sendMessage';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useMessaging } from '../api/useMessaging';
 
 export const Chat = React.memo(() => {
 
@@ -52,10 +53,8 @@ export const Chat = React.memo(() => {
     />;
 });
 
-const ChatMessages = React.memo((props: { id: string, me: string, opponent: string, meIsA: boolean }) => {
-    const messages = useMessages(props.id);
-
-    if (!messages.data) {
+const ChatMessages = React.memo((props: { id: string, messages: MessageType[] | null, me: string, opponent: string, meIsA: boolean }) => {
+    if (!props.messages) {
         return (
             <div className='flex flex-grow justify-center items-center'>
                 <Loader2 className="mr-2 h-[64px] w-[64px] animate-spin" />
@@ -64,14 +63,14 @@ const ChatMessages = React.memo((props: { id: string, me: string, opponent: stri
     }
     return (
         <div className='flex flex-1 flex-col-reverse overflow-y-scroll'>
-            {[...messages.data.messages.messages].reverse().map((v) => (
+            {[...props.messages].reverse().map((v) => (
                 <MessageView key={'msg-' + v.mid} message={v} me={props.me} opponent={props.opponent} meIsA={props.meIsA} />
             ))}
         </div>
     );
 });
 
-const ChatSend = React.memo((props: { id: string }) => {
+const ChatSend = React.memo((props: { id: string, typing: boolean }) => {
     const [text, setText] = React.useState('');
     const [sending, setSending] = React.useState(false);
     const [sendPrivate, setSendPrivate] = React.useState(false);
@@ -110,6 +109,9 @@ const ChatSend = React.memo((props: { id: string }) => {
     return (
         <div className='flex flex-row gap-[8px] min-h-[64px] mx-[32px] max-h-[192px] flex-grow-1 items-center py-[8px] mb-[32px]'>
             <div className='flex flex-col flex-grow'>
+                <div className="flex items-center h-[36px] ml-[4px] opacity-70">
+                    {props.typing ? 'Assistant is typing...' : ''}
+                </div>
                 <Textarea
                     className='min-h-[40px] h-auto overflow-hidden'
                     ref={ref}
@@ -131,7 +133,7 @@ const ChatSend = React.memo((props: { id: string }) => {
                 </div>
             </div>
             <Button
-                className='mb-[36px]'
+                className='mb-[36px] mt-[36px]'
                 disabled={sending}
                 onClick={doSend}
             >
@@ -142,6 +144,10 @@ const ChatSend = React.memo((props: { id: string }) => {
 });
 
 const ChatView = React.memo((props: { id: string, nameMe: string, nameOpponent: string, description: string, meIsA: boolean }) => {
+
+    // Events
+    const [messages, typing] = useMessaging(props.id);
+
     const navigate = useNavigate();
     const resetButton = (
         <Button onClick={() => navigate('/')}>
@@ -151,8 +157,8 @@ const ChatView = React.memo((props: { id: string, nameMe: string, nameOpponent: 
     return (
         <>
             <Header title={'Mediation of ' + props.nameMe + ' and ' + props.nameOpponent} right={resetButton} />
-            <ChatMessages id={props.id} me={props.nameMe} opponent={props.nameOpponent} meIsA={props.meIsA} />
-            <ChatSend id={props.id} />
+            <ChatMessages id={props.id} me={props.nameMe} opponent={props.nameOpponent} meIsA={props.meIsA} messages={messages} />
+            <ChatSend id={props.id} typing={typing} />
         </>
     );
 });
