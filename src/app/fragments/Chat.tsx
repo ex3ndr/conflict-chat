@@ -108,11 +108,11 @@ const ChatSend = React.memo((props: { id: string, typing: boolean }) => {
     }, [sending]);
 
     return (
-        <div className='flex flex-row justify-center'>
-            <div className='flex flex-row flex-grow max-w-[720px] gap-[8px] min-h-[64px] mx-[32px] max-h-[192px] flex-grow-1 items-center mb-[32px]'>
-                <div className='flex flex-col flex-grow mt-[8px]'>
+        <div className='flex flex-row justify-center min-h-[64px] mx-[32px] max-h-[192px]'>
+            <div className='flex flex-col flex-grow max-w-[720px] gap-[8px] items-stretch mb-[32px]'>
+                <div className='flex flex-col flex-grow mt-[8px] ml-[48px] mr-[24px]'>
                     <Textarea
-                        className='min-h-[40px] h-auto overflow-hidden'
+                        className='h-[80px] overflow-hidden resize-none text-base'
                         ref={ref}
                         placeholder='Type your message'
                         value={text}
@@ -136,13 +136,13 @@ const ChatSend = React.memo((props: { id: string, typing: boolean }) => {
                         </div>
                     </div>
                 </div>
-                <Button
+                {/* <Button
                     className='mb-[36px] mt-[12px]'
                     disabled={sending}
                     onClick={doSend}
                 >
                     Send
-                </Button>
+                </Button> */}
             </div>
         </div>
     );
