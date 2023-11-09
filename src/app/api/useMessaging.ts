@@ -4,6 +4,7 @@ import qs from 'querystring';
 import { getJoinToken } from './getJoinToken';
 import { Event } from './useUpdates';
 import { delay } from '../utils/time';
+import ReconnectingEventSource from "reconnecting-eventsource";
 
 export function useMessaging(id: string): [MessageType[] | null, boolean] {
     const [messages, setMessages] = React.useState<MessageType[] | null>(null);
@@ -50,7 +51,7 @@ export function useMessaging(id: string): [MessageType[] | null, boolean] {
             let typingTimeout: any = null;
 
             // Subscribe to updates
-            const sse = new EventSource('https://conflict-f8894b941d1f.herokuapp.com/session/events?' + qs.stringify({ id, token: getJoinToken(id) }));
+            const sse = new ReconnectingEventSource('https://conflict-f8894b941d1f.herokuapp.com/session/events?' + qs.stringify({ id, token: getJoinToken(id) }));
             sse.onmessage = (e) => {
                 if (exited) {
                     return;
