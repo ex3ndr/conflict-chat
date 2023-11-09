@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useChat } from '../api/useChat';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AlertCircle, BookDown, Loader2 } from "lucide-react"
+import { AlertCircle, Loader2 } from "lucide-react"
 import { Button } from '@/components/ui/button';
 import { joinSession } from '../api/joinSession';
 import { Header } from '@/components/header';
