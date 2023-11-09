@@ -14,7 +14,7 @@ export const MessageView = React.memo((props: { message: MessageType, me: string
     } else if (props.message.content.sender === 'outgoing') {
         name = props.me + ' (You)';
     }
-    let color = 'color-neutral-900';
+    let color = '';
     if (props.message.content.sender === 'system') {
         color = 'text-orange-600';
     } else if (props.message.content.sender === 'incoming') {
@@ -73,7 +73,7 @@ export const MessageView = React.memo((props: { message: MessageType, me: string
                     {props.message.content.private === true && (
                         <VenetianMaskIcon className={cn(color, 'mr-[4px] mt-[1px]')} size={18} />
                     )}
-                    <span className={cn('text-base text-neutral-900 font-semibold', color)}>{name}</span>
+                    <span className={cn('text-base font-semibold', color)}>{name}</span>
                     {props.message.content.private === true && (
                         <span className='ml-[4px] font-bold'>visible only to you</span>
                     )}
