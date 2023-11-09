@@ -1,11 +1,22 @@
 .container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     flex-grow: 1;
     flex-basis: 0;
 }
+
+.inner {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-basis: 0;
+    align-items: center;
+    justify-content: center;
+    max-width: calc(min(100%, 560px));
+}
+
 .section {
     align-self: center;
     align-items: flex-start;
@@ -14,6 +25,6 @@
     padding-left: 24px;
     padding-right: 24px;
     gap: 16px;
-    width: 560px;
+    width: 100%;
     margin-bottom: 32px;
 }

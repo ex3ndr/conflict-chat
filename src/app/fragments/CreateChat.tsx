@@ -39,29 +39,31 @@ export const CreateChat = React.memo(() => {
 
     return (
         <div className={styles.container}>
-            <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 pb-[32px]">Starting a session</h2>
-            <div className={styles.section}>
-                <div>
-                    <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Who would participate in the session?</h4>
-                    <p className="text-sm text-muted-foreground">First names are preffered, but you can write them in any form.</p>
+            <div className={styles.inner}>
+                <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 pb-[32px]">Starting a session</h2>
+                <div className={styles.section}>
+                    <div>
+                        <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Who would participate in the session?</h4>
+                        <p className="text-sm text-muted-foreground">First names are preffered, but you can write them in any form.</p>
+                    </div>
+                    <Input placeholder='First participant name' disabled={loading} value={nameA} onChange={(e) => setNameA(e.target.value)} />
+                    <Input placeholder='Second participant name' disabled={loading} value={nameB} onChange={(e) => setNameB(e.target.value)} />
                 </div>
-                <Input placeholder='First participant name' disabled={loading} value={nameA} onChange={(e) => setNameA(e.target.value)} />
-                <Input placeholder='Second participant name' disabled={loading} value={nameB} onChange={(e) => setNameB(e.target.value)} />
-            </div>
-            <div className={styles.section}>
-                <div>
-                    <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Describe problem</h4>
-                    <p className="text-sm text-muted-foreground">Explain the conflict mentioning both of a participants</p>
+                <div className={styles.section}>
+                    <div>
+                        <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">Describe problem</h4>
+                        <p className="text-sm text-muted-foreground">Explain the conflict mentioning both of a participants</p>
+                    </div>
+                    <Textarea placeholder='This is visible for everyone' className='h-[128px] resize-none' disabled={loading} value={description} onChange={(e) => setDescription(e.target.value)} />
                 </div>
-                <Textarea placeholder='This is visible for everyone' className='h-[128px] resize-none' disabled={loading} value={description} onChange={(e) => setDescription(e.target.value)} />
+                <Button disabled={loading} onClick={doCreate}>
+                    {loading && (<Loader2 className="mr-2 h-4 w-4 animate-spin" />)}
+                    Start session
+                </Button>
+                <Button disabled={loading} onClick={doExample} className='mt-[16px]' variant={'ghost'}>
+                    Example
+                </Button>
             </div>
-            <Button disabled={loading} onClick={doCreate}>
-                {loading && (<Loader2 className="mr-2 h-4 w-4 animate-spin" />)}
-                Start session
-            </Button>
-            <Button disabled={loading} onClick={doExample} className='mt-[16px]' variant={'ghost'}>
-                Example
-            </Button>
         </div>
     );
 });

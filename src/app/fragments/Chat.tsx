@@ -192,7 +192,7 @@ const ChatJoin = React.memo((props: { id: string, nameA: string, nameB: string, 
     };
 
     return (
-        <div className='flex flex-grow justify-center items-center'>
+        <div className='flex flex-grow justify-center items-center px-[16px]'>
             <div className='flex flex-col items-center'>
                 <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 mb-[24px]">Mediation Session</h2>
                 <blockquote className="border-l-2 pl-6 italic mb-[32px]">
