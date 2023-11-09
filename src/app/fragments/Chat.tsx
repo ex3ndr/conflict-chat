@@ -107,11 +107,8 @@ const ChatSend = React.memo((props: { id: string, typing: boolean }) => {
     }, [sending]);
 
     return (
-        <div className='flex flex-row gap-[8px] min-h-[64px] mx-[32px] max-h-[192px] flex-grow-1 items-center py-[8px] mb-[32px]'>
-            <div className='flex flex-col flex-grow'>
-                <div className="flex items-center h-[36px] ml-[4px] opacity-70">
-                    {props.typing ? 'Assistant is typing...' : ''}
-                </div>
+        <div className='flex flex-row gap-[8px] min-h-[64px] mx-[32px] max-h-[192px] flex-grow-1 items-center mb-[32px]'>
+            <div className='flex flex-col flex-grow mt-[8px]'>
                 <Textarea
                     className='min-h-[40px] h-auto overflow-hidden'
                     ref={ref}
@@ -123,17 +120,22 @@ const ChatSend = React.memo((props: { id: string, typing: boolean }) => {
                     onSubmit={doSend}
                     rows={1}
                 />
-                <div className="flex items-center space-x-2 h-[36px] ml-[4px]">
-                    <Checkbox checked={sendPrivate} onCheckedChange={(e) => setSendPrivate(e === true)} />
-                    <label
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                        Private message
-                    </label>
+                <div className='flex items-center justify-between h-[32px]'>
+                    <span className='opacity-70 ml-[14px]'>
+                        {props.typing ? 'Mediator is typing...' : ''}
+                    </span>
+                    <div className="flex items-center space-x-2 h-[32px] ml-[4px]">
+                        <Checkbox checked={sendPrivate} onCheckedChange={(e) => setSendPrivate(e === true)} />
+                        <label
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                            Private message
+                        </label>
+                    </div>
                 </div>
             </div>
             <Button
-                className='mb-[36px] mt-[36px]'
+                className='mb-[36px] mt-[12px]'
                 disabled={sending}
                 onClick={doSend}
             >
