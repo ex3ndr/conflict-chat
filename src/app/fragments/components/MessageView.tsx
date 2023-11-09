@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { MessageType } from '@/app/api/useMessages';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { VenetianMaskIcon } from 'lucide-react';
 
@@ -25,7 +25,7 @@ export const MessageView = React.memo((props: { message: MessageType, me: string
         avatar = (
             <Avatar>
                 <AvatarFallback>
-                    {props.opponent.slice(0, 2)}
+                    {props.opponent.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
             </Avatar>
         )
@@ -33,13 +33,14 @@ export const MessageView = React.memo((props: { message: MessageType, me: string
         avatar = (
             <Avatar>
                 <AvatarFallback>
-                    {props.me.slice(0, 2)}
+                    {props.me.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
             </Avatar>
         )
     } else {
         avatar = (
             <Avatar>
+                <AvatarImage src='/robot.png' />
                 <AvatarFallback>
                     ME
                 </AvatarFallback>
